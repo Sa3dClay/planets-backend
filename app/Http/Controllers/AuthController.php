@@ -35,14 +35,18 @@ class AuthController extends Controller
         //     return response()->json(['error' => 'Unauthorized'], 401);
         // }
 
-        // return new UserResource($user);
-
         // response method 1
-        return response()->json(compact('user', 'token'), 201);
-        
+        return (new UserResource($user))
+            ->additional(['meta' => [
+                'token' => $token,
+            ]]);
+
         // response method 2
+        // return response()->json(compact('user', 'token'), 201);
+        
+        // response method 3
         // return response()->json([
-        //     'user' => $user,
+        //     'data' => $user,
         //     'token' => $token,
         // ], 201);
     }
@@ -53,10 +57,16 @@ class AuthController extends Controller
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
-        return response()->json([
-            'user' => auth()->user(),
-            'token' => $token,
-        ], 201);
+        // return response()->json([
+        //     'data' => auth()->user(),
+        //     'token' => $token,
+        // ], 200);
+
+        // method 2
+        return (new UserResource(auth()->user()))
+            ->additional(['meta' => [
+                'token' => $token,
+            ]]);
     }
 
     public function logout() {
