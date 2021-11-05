@@ -26,6 +26,7 @@ class UserUpdateRequest extends FormRequest
     {
         return [
             'name'      =>  'required|string|max:255',
+            'planet'    =>  'required|string',
             'email'     =>  [
                 'required',
                 'email',

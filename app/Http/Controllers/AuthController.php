@@ -20,10 +20,11 @@ class AuthController extends Controller
         }
 
         $user = User::create([
-            'name'      => $req->name,
-            'email'     => $req->email,
-            'password'  => bcrypt($req->password),
-            'role'      => $role,
+            'name'      =>  $req->name,
+            'email'     =>  $req->email,
+            'password'  =>  bcrypt($req->password),
+            'role'      =>  $role,
+            'planet'    =>  $req->planet,
         ]);
 
         // create token method 1

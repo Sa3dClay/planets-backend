@@ -36,6 +36,7 @@ class UserController extends Controller
 
         $user->name = $req->name;
         $user->email = $req->email;
+        $user->planet = $req->planet;
 
         $user->save();
 
