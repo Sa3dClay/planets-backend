@@ -9,6 +9,7 @@ use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
+
 use App\Models\User;
 
 class ChatEvent implements ShouldBroadcast
@@ -29,6 +30,11 @@ class ChatEvent implements ShouldBroadcast
         $this->message = $message;
     }
 
+    public function broadcastAs()
+    {
+        return 'chat-event';
+    }
+
     /**
      * Get the channels the event should broadcast on.
      *
@@ -36,6 +42,8 @@ class ChatEvent implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('chatRoom');
+        return new Channel('chat');
+
+        // return new Channel('ChatRoom');
     }
 }

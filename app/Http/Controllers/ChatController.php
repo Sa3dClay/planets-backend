@@ -16,6 +16,14 @@ class ChatController extends Controller
 
     public function sendMessage(Request $req) {
         $user = Auth::user();
-        event(new ChatEvent($user, $req->message));
+        
+        broadcast(new ChatEvent($user, $req->message))
+            ->toOthers();
     }
+
+    // public function sendMessage() {
+    //     $user = Auth::user();
+    //     $message = "Hello World!";
+    //     event(new ChatEvent($user, $message));
+    // }
 }
