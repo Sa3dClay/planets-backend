@@ -32,10 +32,8 @@ Route::prefix('auth')->group(function () {
 // Users
 Route::group(['middleware' => 'auth:api'], function() {
     Route::get('users', 'UserController@index')->middleware('isAdmin');
-
     Route::get('users/{id}', 'UserController@show')->middleware('isAdminOrSelf');
-    
     Route::post('users/{id}', 'UserController@update')->middleware('isAdminOrSelf');
-
+    Route::get('getMessages', 'ChatController@getMessages');
     Route::post('sendMessage', 'ChatController@sendMessage');
 });
