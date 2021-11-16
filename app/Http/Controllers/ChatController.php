@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UpdateMessageRequest;
 use App\Http\Requests\SendMessageRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
@@ -35,9 +36,49 @@ class ChatController extends Controller
             ->toOthers();
     }
 
-    // public function sendMessage() {
-    //     $user = Auth::user();
-    //     $message = "Hello World!";
-    //     event(new ChatEvent($user, $message));
-    // }
+    public function editMessage(UpdateMessageRequest $req) {
+        $user = Auth::user();
+        $oldMessage = $req->oldMessage;
+        $newMessage = $req->newMessage;
+
+        $message = Message::where('user_id', $user->id)
+            ->where('message', $oldMessage)
+            ->orderByDesc('updated_at')
+            ->first();
+        
+        if($message) {
+            $message->message = $newMessage;
+            $message->save();
+
+            return response()->json([
+                'message' => $message
+            ], 200);
+        } else {
+            return response()->json([
+                'error' => 'message not found'
+            ], 400);
+        }
+    }
+
+    public function deleteMessage(SendMessageRequest $req) {
+        $user = Auth::user();
+        $oldMessage = $req->message;
+
+        $message = Message::where('user_id', $user->id)
+            ->where('message', $oldMessage)
+            ->orderByDesc('updated_at')
+            ->first();
+
+        if($message) {
+            $message->delete();
+
+            return response()->json([
+                'success' => 'message deleted'
+            ], 200);
+        } else {
+            return response()->json([
+                'error' => 'message not found'
+            ], 400);
+        }
+    }
 }
