@@ -7,6 +7,7 @@
     First, configure your Database and Pusher in the .env file 
     Second, run the following commands
 ```
+composer install
 php artisan key:generate
 php artisan migrate
 php artisan sreve
