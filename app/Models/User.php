@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use Tymon\JWTAuth\Contracts\JWTSubject;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Multicaret\Acquaintances\Traits\Friendable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -11,7 +11,7 @@ use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable implements JWTSubject
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, Friendable;
 
     /**
      * The attributes that are mass assignable.
@@ -73,5 +73,15 @@ class User extends Authenticatable implements JWTSubject
     public function messages()
     {
         return $this->hasMany(Message::class);
+    }
+
+    public function scopeNotAdmin($query)
+    {
+        return $query->where('role', '!=', 0);
+    }
+
+    public function scopeNotSelf($query)
+    {
+        return $query->where('id', '!=', auth()->id());
     }
 }
