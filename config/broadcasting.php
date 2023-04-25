@@ -61,4 +61,6 @@ return [
 
     ],
 
+    'debug' => true,
+
 ];

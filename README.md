@@ -4,7 +4,7 @@
     - Laravel-JWT for authentication
     - API endpoints for client communication
 ## Server Installation
-    First, configure your Database and Pusher in the .env file 
+    First, configure your Database and Pusher in the .env file and change broadcast_driver to pusher
     Second, run the following commands
 ```
 composer install

@@ -31,9 +31,13 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::post('/remove-friend/{user}', 'removeFriend');
     });
 
-    Route::get('getMessages', 'ChatController@getMessages');
-    Route::post('sendMessage', 'ChatController@sendMessage');
-
-    Route::post('editMessage/{id}', 'ChatController@editMessage')->middleware('isAdminOrSelf');
-    Route::post('deleteMessage/{id}', 'ChatController@deleteMessage')->middleware('isAdminOrSelf');
+    Route::prefix('chat')->controller(ChatController::class)->group(function () {
+        // chat messages
+        Route::prefix('messages')->group(function () {
+            Route::post('/send', 'sendMessage');
+            Route::get('/{recipient}', 'getMessages');
+            Route::post('/edit/{message}', 'editMessage')->middleware('isAdminOrSelf');
+            Route::delete('delete/{message}', 'deleteMessage')->middleware('isAdminOrSelf');
+        });
+    });
 });
