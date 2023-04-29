@@ -24,11 +24,12 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::get('/pending-friend-request', 'getPendingFriendRequests');
         Route::get('/{id}', 'show');
         // post requests
+        Route::post('/set-fcm-token', 'setFcmToken');
+        Route::post('/remove-friend/{user}', 'removeFriend');
         Route::post('/{id}', 'update')->middleware('isAdminOrSelf');
         Route::post('/send-friend-request/{user}', 'sendFriendRequest');
         Route::post('/accept-friend-request/{user}', 'acceptFriendRequest');
         Route::post('/deny-friend-request/{user}', 'denyFriendRequest');
-        Route::post('/remove-friend/{user}', 'removeFriend');
     });
 
     Route::prefix('chat')->controller(ChatController::class)->group(function () {

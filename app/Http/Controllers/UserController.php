@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Illuminate\Http\Request;
 use App\Http\Requests\UserUpdateRequest;
 use App\Http\Resources\User as UserResource;
 
@@ -115,5 +116,24 @@ class UserController extends Controller
             ->get();
 
         return UserResource::collection($users);
+    }
+
+    public function setFcmToken(Request $request)
+    {
+        try {
+            auth()->user()->update([
+                'fcm_token' => $request->token
+            ]);
+
+            return response([
+                'success' => true,
+                'message' => 'Done!',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e,
+            ]);
+        }
     }
 }

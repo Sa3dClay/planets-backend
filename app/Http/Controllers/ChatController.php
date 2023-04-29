@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\ChatMessage;
 use App\Events\NewChatMessage;
 use App\Http\Requests\SendMessageRequest;
+use Kutia\Larafirebase\Facades\Larafirebase;
 
 class ChatController extends Controller
 {
@@ -41,6 +42,18 @@ class ChatController extends Controller
 
         broadcast(new NewChatMessage($message));
 
+        if ($recipient->fcm_token) $this->sendMessageNotification($recipient->fcm_token, $message->message);
+
         return response()->json(['message' => $message]);
+    }
+
+    public function sendMessageNotification($token, $message)
+    {
+        Larafirebase::withTitle(auth()->user()->name . ' ارسل لك رسالة')
+            ->withBody($message)
+            ->withSound('default')
+            ->withPriority('high')
+            ->withClickAction(env('FRONT_END_URL') . '/chat/' . auth()->id())
+            ->sendNotification($token);
     }
 }
