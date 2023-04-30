@@ -53,7 +53,7 @@ class ChatController extends Controller
             ->withBody($message)
             ->withSound('default')
             ->withPriority('high')
-            ->withClickAction(env('FRONT_END_URL') . '/chat/' . auth()->id())
+            ->withClickAction(env('FRONT_END_URL') . '/chat')
             ->sendNotification($token);
     }
 }
