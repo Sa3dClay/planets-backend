@@ -136,4 +136,9 @@ class UserController extends Controller
             ]);
         }
     }
+
+    public function deleteFcmToken()
+    {
+        auth()->user()->update(['fcm_token' => null]);
+    }
 }

@@ -25,6 +25,7 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::get('/{id}', 'show');
         // post requests
         Route::post('/set-fcm-token', 'setFcmToken');
+        Route::post('/delete-fcm-token', 'deleteFcmToken');
         Route::post('/remove-friend/{user}', 'removeFriend');
         Route::post('/{id}', 'update')->middleware('isAdminOrSelf');
         Route::post('/send-friend-request/{user}', 'sendFriendRequest');
