@@ -16,14 +16,13 @@ Route::prefix('auth')->group(function () {
 // Users
 Route::group(['middleware' => 'auth:api'], function () {
     Route::controller(UserController::class)->prefix('users')->group(function () {
-        // get requests
         Route::get('/', 'index')->middleware('isAdmin');
         Route::get('/friends', 'getFriends');
         Route::get('/friend-requests', 'getFriendRequests');
         Route::get('/not-requested-users', 'getNotRequestedUsers');
         Route::get('/pending-friend-request', 'getPendingFriendRequests');
-        Route::get('/{id}', 'show');
-        // post requests
+        Route::get('/{id}', 'show')->middleware('isAdminOrFriendOrSelf');
+
         Route::post('/set-fcm-token', 'setFcmToken');
         Route::post('/delete-fcm-token', 'deleteFcmToken');
         Route::post('/remove-friend/{user}', 'removeFriend');
