@@ -33,10 +33,10 @@ Route::group(['middleware' => 'auth:api'], function () {
     });
 
     Route::prefix('chat')->controller(ChatController::class)->group(function () {
-        // chat messages
         Route::prefix('messages')->group(function () {
             Route::post('/send', 'sendMessage');
             Route::get('/{recipient}', 'getMessages');
+            Route::patch('/{sender}/read-prev-messages', 'markPrevMessagesRead');
             Route::post('/edit/{message}', 'editMessage')->middleware('isAdminOrSelf');
             Route::delete('delete/{message}', 'deleteMessage')->middleware('isAdminOrSelf');
         });
