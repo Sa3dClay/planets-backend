@@ -53,7 +53,16 @@ class ChatController extends Controller
             ->withBody($message)
             ->withSound('default')
             ->withPriority('high')
-            ->withClickAction(env('FRONT_END_URL') . '/chat/' . auth()->id())
+            ->withClickAction(env('FRONT_END_URL') . '/chat')
             ->sendNotification($token);
+    }
+
+    public function markPrevMessagesRead(User $sender)
+    {
+        if (!auth()->user()->isFriendWith($sender)) {
+            abort(403);
+        }
+
+        auth()->user()->receivedMessages()->where('sender_id', $sender->id)->update(['unread' => false]);
     }
 }

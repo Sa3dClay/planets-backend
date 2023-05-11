@@ -16,15 +16,15 @@ Route::prefix('auth')->group(function () {
 // Users
 Route::group(['middleware' => 'auth:api'], function () {
     Route::controller(UserController::class)->prefix('users')->group(function () {
-        // get requests
         Route::get('/', 'index')->middleware('isAdmin');
         Route::get('/friends', 'getFriends');
         Route::get('/friend-requests', 'getFriendRequests');
         Route::get('/not-requested-users', 'getNotRequestedUsers');
         Route::get('/pending-friend-request', 'getPendingFriendRequests');
-        Route::get('/{id}', 'show');
-        // post requests
+        Route::get('/{id}', 'show')->middleware('isAdminOrFriendOrSelf');
+
         Route::post('/set-fcm-token', 'setFcmToken');
+        Route::post('/delete-fcm-token', 'deleteFcmToken');
         Route::post('/remove-friend/{user}', 'removeFriend');
         Route::post('/{id}', 'update')->middleware('isAdminOrSelf');
         Route::post('/send-friend-request/{user}', 'sendFriendRequest');
@@ -33,10 +33,10 @@ Route::group(['middleware' => 'auth:api'], function () {
     });
 
     Route::prefix('chat')->controller(ChatController::class)->group(function () {
-        // chat messages
         Route::prefix('messages')->group(function () {
             Route::post('/send', 'sendMessage');
             Route::get('/{recipient}', 'getMessages');
+            Route::patch('/{sender}/read-prev-messages', 'markPrevMessagesRead');
             Route::post('/edit/{message}', 'editMessage')->middleware('isAdminOrSelf');
             Route::delete('delete/{message}', 'deleteMessage')->middleware('isAdminOrSelf');
         });

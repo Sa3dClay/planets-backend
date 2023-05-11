@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use App\Http\Resources\FriendResource;
 use App\Http\Requests\UserUpdateRequest;
 use App\Http\Resources\User as UserResource;
+use Kutia\Larafirebase\Facades\Larafirebase;
 
 class UserController extends Controller
 {
@@ -51,18 +53,42 @@ class UserController extends Controller
     {
         auth()->user()->befriend($user);
 
+        if ($user->fcm_token) $this->sendFriendRequestNotification($user->fcm_token);
+
         return response([
             'message' => 'Your request has been sent to ' . $user->name
         ]);
+    }
+
+    public function sendFriendRequestNotification($token)
+    {
+        Larafirebase::withTitle(auth()->user()->name . ' أرسل لك طلب صداقة')
+            ->withBody(' اتقل عليه شوية xD')
+            ->withSound('default')
+            ->withPriority('high')
+            ->withClickAction(env('FRONT_END_URL') . '/friends')
+            ->sendNotification($token);
     }
 
     public function acceptFriendRequest(User $user)
     {
         auth()->user()->acceptFriendRequest($user);
 
+        if ($user->fcm_token) $this->sendAcceptFriendRequestNotification($user->fcm_token);
+
         return response([
             'message' => 'You have accepted ' . $user->name . ' friendship request :)'
         ]);
+    }
+
+    public function sendAcceptFriendRequestNotification($token)
+    {
+        Larafirebase::withTitle(auth()->user()->name . ' أضافك الى الأصدقاء')
+            ->withBody('يمكنك محادثته الآن!')
+            ->withSound('default')
+            ->withPriority('high')
+            ->withClickAction(env('FRONT_END_URL') . '/chat')
+            ->sendNotification($token);
     }
 
     public function denyFriendRequest(User $user)
@@ -87,7 +113,7 @@ class UserController extends Controller
     {
         $friends = auth()->user()->getFriends();
 
-        return UserResource::collection($friends);
+        return FriendResource::collection($friends);
     }
 
     public function getFriendRequests()
@@ -135,5 +161,10 @@ class UserController extends Controller
                 'message' => $e,
             ]);
         }
+    }
+
+    public function deleteFcmToken()
+    {
+        auth()->user()->update(['fcm_token' => null]);
     }
 }
