@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use App\Http\Resources\FriendResource;
 use App\Http\Requests\UserUpdateRequest;
 use App\Http\Resources\User as UserResource;
 use Kutia\Larafirebase\Facades\Larafirebase;
@@ -112,7 +113,7 @@ class UserController extends Controller
     {
         $friends = auth()->user()->getFriends();
 
-        return UserResource::collection($friends);
+        return FriendResource::collection($friends);
     }
 
     public function getFriendRequests()
