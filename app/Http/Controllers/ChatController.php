@@ -40,7 +40,11 @@ class ChatController extends Controller
         $message->recipient_id = $recipient->id;
         $message->save();
 
-        broadcast(new NewChatMessage($message));
+        try {
+            broadcast(new NewChatMessage($message));
+        } catch (\Exception $e) {
+            logger("error while broadcasting message", [$e]);
+        }
 
         if ($recipient->fcm_token) $this->sendMessageNotification($recipient->fcm_token, $message->message);
 
