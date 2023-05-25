@@ -109,6 +109,24 @@ class UserController extends Controller
         ]);
     }
 
+    public function blockFriend(User $user)
+    {
+        auth()->user()->blockFriend($user);
+
+        return response([
+            'message' => 'You have blocked ' . $user->name . ', he can not bother you anymore 😉'
+        ]);
+    }
+
+    public function unblockFriend(User $user)
+    {
+        auth()->user()->unblockFriend($user);
+
+        return response([
+            'message' => 'You have unblocked ' . $user->name . ', he can see you in his friends list now!'
+        ]);
+    }
+
     public function getFriends()
     {
         $friends = auth()->user()->getFriends();
@@ -116,7 +134,7 @@ class UserController extends Controller
         return FriendResource::collection($friends);
     }
 
-    public function getFriendRequests()
+    public function getFriendsRequests()
     {
         $friendsRequests = auth()->user()->getFriendRequests();
         $usersRequestedFriendship = User::whereIn('id', $friendsRequests->pluck('sender_id'))->get();
@@ -124,7 +142,7 @@ class UserController extends Controller
         return UserResource::collection($usersRequestedFriendship);
     }
 
-    public function getPendingFriendRequests()
+    public function getPendingFriendsRequests()
     {
         $pendingRequests = auth()->user()->getPendingFriendships();
         $pendingUsersInvited = User::notSelf()->whereIn('id', $pendingRequests->pluck('recipient_id'))->get();
@@ -132,7 +150,7 @@ class UserController extends Controller
         return UserResource::collection($pendingUsersInvited);
     }
 
-    public function getNotRequestedUsers()
+    public function getAvailableFriends()
     {
         $friendships = auth()->user()->getAllFriendships();
         $users = User::notAdmin()
@@ -140,6 +158,22 @@ class UserController extends Controller
             ->whereNotIn('id', $friendships->pluck('sender_id'))
             ->whereNotIn('id', $friendships->pluck('recipient_id'))
             ->get();
+
+        return UserResource::collection($users);
+    }
+
+    public function getBlockedFriends()
+    {
+        $blockedFriendships = auth()->user()->getBlockedFriendships();
+        $users = User::notSelf()->whereIn('id', $blockedFriendships->pluck('recipient_id'))->get();
+
+        return UserResource::collection($users);
+    }
+
+    public function getDeniedFriends()
+    {
+        $deniedFriendships = auth()->user()->getDeniedFriendships();
+        $users = User::notSelf()->whereIn('id', $deniedFriendships->pluck('sender_id'))->get();
 
         return UserResource::collection($users);
     }
@@ -159,7 +193,7 @@ class UserController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => $e,
-            ]);
+            ], 500);
         }
     }
 

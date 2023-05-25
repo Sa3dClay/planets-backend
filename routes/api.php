@@ -16,20 +16,30 @@ Route::prefix('auth')->group(function () {
 // Users
 Route::group(['middleware' => 'auth:api'], function () {
     Route::controller(UserController::class)->prefix('users')->group(function () {
-        Route::get('/', 'index')->middleware('isAdmin');
-        Route::get('/friends', 'getFriends');
-        Route::get('/friend-requests', 'getFriendRequests');
-        Route::get('/not-requested-users', 'getNotRequestedUsers');
-        Route::get('/pending-friend-request', 'getPendingFriendRequests');
-        Route::get('/{id}', 'show')->middleware('isAdminOrFriendOrSelf');
+        // Friends
+        Route::prefix('friends')->group(function () {
+            Route::prefix('/requests')->group(function () {
+                Route::get('/', 'getFriendsRequests');
+                Route::get('/pending', 'getPendingFriendsRequests');
+                Route::post('/send/{user}', 'sendFriendRequest');
+                Route::post('/deny/{user}', 'denyFriendRequest');
+                Route::post('/accept/{user}', 'acceptFriendRequest');
+            });
 
+            Route::get('/', 'getFriends');
+            Route::get('/denied', 'getDeniedFriends');
+            Route::get('/blocked', 'getBlockedFriends');
+            Route::get('/available', 'getAvailableFriends');
+            Route::post('/block/{user}', 'blockFriend');
+            Route::post('/remove/{user}', 'removeFriend');
+            Route::post('/unblock/{user}', 'unblockFriend');
+        });
+
+        Route::get('/', 'index')->middleware('isAdmin');
+        Route::get('/{id}', 'show')->middleware('isAdminOrFriendOrSelf');
         Route::post('/set-fcm-token', 'setFcmToken');
         Route::post('/delete-fcm-token', 'deleteFcmToken');
-        Route::post('/remove-friend/{user}', 'removeFriend');
         Route::post('/{id}', 'update')->middleware('isAdminOrSelf');
-        Route::post('/send-friend-request/{user}', 'sendFriendRequest');
-        Route::post('/accept-friend-request/{user}', 'acceptFriendRequest');
-        Route::post('/deny-friend-request/{user}', 'denyFriendRequest');
     });
 
     Route::prefix('chat')->controller(ChatController::class)->group(function () {
