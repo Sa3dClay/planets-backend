@@ -16,7 +16,6 @@ Route::prefix('auth')->group(function () {
 // Users
 Route::group(['middleware' => 'auth:api'], function () {
     Route::controller(UserController::class)->prefix('users')->group(function () {
-        // Friends
         Route::prefix('friends')->group(function () {
             Route::prefix('/requests')->group(function () {
                 Route::get('/', 'getFriendsRequests');
@@ -46,6 +45,7 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::prefix('messages')->group(function () {
             Route::post('/send', 'sendMessage');
             Route::get('/{recipient}', 'getMessages');
+            Route::post('/react/{message}', 'reactOnMessage');
             Route::patch('/{sender}/read-prev-messages', 'markPrevMessagesRead');
             Route::post('/edit/{message}', 'editMessage')->middleware('isAdminOrSelf');
             Route::delete('delete/{message}', 'deleteMessage')->middleware('isAdminOrSelf');

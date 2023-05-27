@@ -10,7 +10,9 @@ class ChatMessage extends Model
     use HasFactory;
 
     protected $fillable = [
+        'unread',
         'message',
+        'reaction',
         'sender_id',
         'recipient_id',
     ];

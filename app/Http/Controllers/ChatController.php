@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\ChatMessage;
 use App\Events\NewChatMessage;
 use App\Http\Requests\SendMessageRequest;
+use App\Http\Requests\ReactOnMessageRequest;
 use Kutia\Larafirebase\Facades\Larafirebase;
 
 class ChatController extends Controller
@@ -68,5 +69,21 @@ class ChatController extends Controller
         }
 
         auth()->user()->receivedMessages()->where('sender_id', $sender->id)->update(['unread' => false]);
+    }
+
+    public function reactOnMessage(ChatMessage $message, ReactOnMessageRequest $request)
+    {
+        $sender = User::find($message->sender_id);
+        if (!auth()->user()->isFriendWith($sender)) abort(403);
+
+        if ($request->reaction === $message->reaction) {
+            $message->reaction = null;
+            $message->save();
+        } else {
+            $message->reaction = $request->reaction;
+            $message->save();
+        }
+
+        return response()->json(['message' => $message]);
     }
 }
