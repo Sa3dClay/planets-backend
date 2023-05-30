@@ -36,6 +36,7 @@ class ChatController extends Controller
         }
 
         $message = new ChatMessage;
+        $message->unread = true;
         $message->sender_id = auth()->id();
         $message->message = $request->message;
         $message->recipient_id = $recipient->id;
@@ -47,6 +48,7 @@ class ChatController extends Controller
             logger("error while broadcasting message", [$e]);
         }
 
+        // send notification using firebase
         if ($recipient->fcm_token) $this->sendMessageNotification($recipient->fcm_token, $message->message);
 
         return response()->json(['message' => $message]);
