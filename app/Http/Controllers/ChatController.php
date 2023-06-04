@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\ChatMessage;
 use App\Events\NewChatMessage;
+use App\Events\ReadChatMessages;
 use App\Http\Requests\SendMessageRequest;
 use App\Http\Requests\ReactOnMessageRequest;
 use Kutia\Larafirebase\Facades\Larafirebase;
@@ -70,7 +71,14 @@ class ChatController extends Controller
             abort(403);
         }
 
+        // read all prev messages
         auth()->user()->receivedMessages()->where('sender_id', $sender->id)->update(['unread' => false]);
+
+        try {
+            broadcast(new ReadChatMessages($sender->id, auth()->id()));
+        } catch (\Exception $e) {
+            logger("error while broadcasting read messages", [$e]);
+        }
     }
 
     public function reactOnMessage(ChatMessage $message, ReactOnMessageRequest $request)
